@@ -2,7 +2,7 @@
     <label class="block text-sm font-semibold text-emerald-700 mb-1">Passport Photo</label>
     @if (!empty($member->passport) && file_exists(public_path($member->passport)))
         <div class="mb-2">
-            <img src="{{ asset($member->passport) }}?v={{ filemtime(public_path($member->passport)) }}" alt="Passport" class="h-24 w-24 object-cover rounded border border-emerald-200">
+            <img src="{{ asset($member->passport) }}" alt="Passport" class="h-24 w-24 object-cover rounded border border-emerald-200">
         </div>
     @else
         <div class="mb-2">
