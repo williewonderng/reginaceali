@@ -86,7 +86,7 @@ class MemberController extends Controller
             'stored_path' => $storedPath
         ]);
 
-        $data['passport'] = 'images/' . $storedPath;
+        $data['passport'] = 'storage/' . $storedPath;
     } catch (\Exception $e) {
         Log::error('Passport upload failed', [
             'error' => $e->getMessage(),
@@ -190,16 +190,17 @@ try {
 
         if ($request->hasFile('passport')) {
             $file = $request->file('passport');
-            $filename = uniqid('passport_') . '.' . $file->getClientOriginalExtension();
             try {
                 // Delete old image if it exists
-                if ($member->passport && file_exists(public_path($member->passport))) {
-                    unlink(public_path($member->passport));
+                if ($member->passport && Storage::disk('public')->exists(str_replace('storage/', '', $member->passport))) {
+                    Storage::disk('public')->delete(str_replace('storage/', '', $member->passport));
                 }
-                $file->move(public_path('images'), $filename);
-                $data['passport'] = 'images/' . $filename;
+                
+                // Store the file in storage/app/public/passports
+                $storedPath = $file->store('passports', 'public');
+                $data['passport'] = 'storage/' . $storedPath;
             } catch (\Exception $e) {
-                    Log::error('Passport upload failed (update)', [
+                Log::error('Passport upload failed (update)', [
                     'error' => $e->getMessage(),
                     'file' => $file->getClientOriginalName(),
                     'mime' => $file->getMimeType(),
